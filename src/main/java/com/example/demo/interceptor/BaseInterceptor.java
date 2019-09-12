@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
+import sun.misc.Request;
 
 /**
  * 拦截器.
@@ -23,8 +24,9 @@ public class BaseInterceptor implements HandlerInterceptor {
                            final HttpServletResponse response,
                            final Object handler) {
     String method = request.getMethod();
+    String para = request.getParameter("id");
     Map map = getUriTemplateVariables(request);
-    if (map.containsKey("code") && map.containsKey("accountPeriod")) {
+    if (map.containsKey("id")) {
 
     }
     return true;
