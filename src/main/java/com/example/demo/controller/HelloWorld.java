@@ -18,6 +18,6 @@ public class HelloWorld {
 
   @GetMapping("/hello/{id}")
   public String helloWorldById(@PathVariable String id) {
-    return "Hello world!" + LocalDateTime.now().toString() + "===" + id;
+    return "Hello"+ id;
   }
 }
