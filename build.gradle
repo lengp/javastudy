@@ -49,3 +49,42 @@ task buildDocker(type: Docker){
 		}
 	}
 }
+
+sourceSets {
+	test {
+		java.srcDir file('src/test/java')
+		//resources.srcDir file('src/test/resources')
+	}
+}
+
+task integTest(type: Test) {
+	compileJava.options.compilerArgs.remove '-parameters'
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
+}
+
+test {
+	// set heap size for the test JVM(s)
+	maxHeapSize = "1024m"
+	maxParallelForks = 1
+
+	testLogging {
+		events "started", "passed", "skipped", "failed"
+		afterSuite testReport("test")
+	}
+}
+
+Closure testReport(testType) {
+	return { desc, result ->
+		if (!desc.parent) { // will match the outermost suite
+			def output = "${testType} Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+			def startItem = '|  ', endItem = '  |'
+			def repeatLength = startItem.length() + output.length() + endItem.length()
+			println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
+		}
+
+	}
+}
+
+check.dependsOn integTest
+
