@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.demo.DemoApplication;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +39,16 @@ public class HelloWorldTest {
   }
 
   @Test
+  public void test() throws Exception {
+    Assert.assertEquals(1,1);
+  }
+
+  @Test
+  public void test2() throws Exception {
+    Assert.assertEquals(1,1);
+  }
+
+  @Test
   public void testHello() throws Exception {
     http.perform(
         get("/hello")
@@ -45,4 +56,5 @@ public class HelloWorldTest {
         //.andExpect(content().string("HelloWorld"))
         .andDo(result -> assertEquals("", "Hello", result.getResponse().getContentAsString().substring(0, 5)));
   }
+
 }
