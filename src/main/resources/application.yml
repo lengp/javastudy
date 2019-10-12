@@ -1,2 +1,6 @@
 server:
   port: 8989
+
+my:
+  name: lengpeng
+  age: 22

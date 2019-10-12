@@ -11,6 +11,7 @@ buildscript {
 plugins {
 	id 'org.springframework.boot' version '2.1.7.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+	id "org.asciidoctor.convert" version "1.5.9.2"
 	id 'java'
 }
 
@@ -32,12 +33,6 @@ repositories {
 	mavenCentral()
 }
 
-dependencies {
-	compile('org.springframework.boot:spring-boot-starter-web')
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
-
-
 task buildDocker(type: Docker){
 	applicationName = jar.baseName
 	tagVersion = jar.version
@@ -50,6 +45,10 @@ task buildDocker(type: Docker){
 	}
 }
 
+ext {
+	snippetsDir = file('build/generated-snippets')
+}
+
 sourceSets {
 	test {
 		java.srcDir file('src/test/java')
@@ -57,10 +56,14 @@ sourceSets {
 	}
 }
 
-task integTest(type: Test) {
-	compileJava.options.compilerArgs.remove '-parameters'
-	testClassesDirs = sourceSets.test.output.classesDirs
-	classpath = sourceSets.test.runtimeClasspath
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-web')
+	asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+	testCompile(
+			'org.springframework.boot:spring-boot-starter-test',
+			'org.springframework.boot:spring-boot-starter-web',
+			'org.springframework.restdocs:spring-restdocs-mockmvc'
+	)
 }
 
 test {
@@ -72,7 +75,14 @@ test {
 		events "started", "passed", "skipped", "failed"
 		afterSuite testReport("test")
 	}
+	outputs.dir snippetsDir
 }
+
+asciidoctor {
+	inputs.dir snippetsDir
+	dependsOn test
+}
+
 
 Closure testReport(testType) {
 	return { desc, result ->
@@ -82,9 +92,22 @@ Closure testReport(testType) {
 			def repeatLength = startItem.length() + output.length() + endItem.length()
 			println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
 		}
-
 	}
 }
 
-check.dependsOn integTest
+task runTest(type: Test) {
+	compileJava.options.compilerArgs.remove '-parameters'
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
+}
+
+
+bootJar {
+	dependsOn asciidoctor
+	from ("${asciidoctor.outputDir}/html5") {
+		into 'static/docs'
+	}
+}
+
+check.dependsOn runTest
 
