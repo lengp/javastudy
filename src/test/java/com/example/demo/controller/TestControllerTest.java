@@ -2,7 +2,8 @@ package com.example.demo.controller;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -23,12 +24,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+/**
+ * @Author: LengPeng
+ * @Date: 2019/10/22 3:29 PM
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {
     DemoApplication.class
 })
-public class HelloWorldTest {
+public class TestControllerTest {
 
   protected MockMvc http;
 
@@ -48,37 +53,17 @@ public class HelloWorldTest {
   }
 
   @Test
-  public void test() throws Exception {
-
-    final long a = 24L * 60L * 60L * 1000L * 25L;
-
-    Assert.assertEquals(1,1);
-  }
-
-  @Test
-  public void test2() throws Exception {
-    Assert.assertEquals(1,1);
-  }
-
-  @Test
-  public void testHello() throws Exception {
-    http.perform(
-        get("/hello")
-    ).andExpect(status().isOk())
-        //.andExpect(content().string("HelloWorld"))
-        .andDo(result -> assertEquals("", "Hello", result.getResponse().getContentAsString().substring(0, 5)));
-  }
-
-
-  @Test
-  public void getName() throws Exception {
-    http.perform(get("/name"))
+  public void testUser() throws Exception {
+    http.perform(get("/users"))
         .andExpect(status().isOk())
-        .andExpect(content().string("lengpeng:22"))
         .andDo(
-            document("get-name")
+            document("get-users",
+                relaxedResponseFields(
+                fieldWithPath("[].id").description("编号"),
+                fieldWithPath("[].name").description("名称"),
+                fieldWithPath("[].birthday").description("生日")
+            ))
         );
   }
-
 
 }

@@ -1,4 +1,7 @@
 = API-DOC
 
-
+## Test
 operation::get-name[snippets='http-request,http-response']
+
+## 获取用户
+operation::get-users[snippets='curl-request,response-fields,http-response']
