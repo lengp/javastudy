@@ -15,15 +15,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
   @GetMapping("/users")
-  public List<User> getUsers(){
+  public List<User> getUsers() {
     List<User> users = new ArrayList<>();
-    for (int i=0;i<5;i++){
+    for (int i = 0; i < 5; i++) {
       User user = new User();
       user.setId(i);
-      user.setName("hello>>"+i);
+      user.setName("hello>>" + i);
       user.setBirthday(new Date());
       users.add(user);
     }
     return users;
+  }
+
+  @GetMapping("/test-01")
+  public String testError() {
+
+    int a = 1;
+    a = a / 0;
+
+    return "no error" + a;
   }
 }
