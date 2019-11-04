@@ -9,6 +9,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.demo.DemoApplication;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -52,12 +56,12 @@ public class HelloWorldTest {
 
     final long a = 24L * 60L * 60L * 1000L * 25L;
 
-    Assert.assertEquals(1,1);
+    Assert.assertEquals(1, 1);
   }
 
   @Test
   public void test2() throws Exception {
-    Assert.assertEquals(1,1);
+    Assert.assertEquals(1, 1);
   }
 
   @Test
@@ -81,4 +85,22 @@ public class HelloWorldTest {
   }
 
 
+  @Test
+  public void mapReduceTest() {
+    final List<Integer> numbers = Arrays.asList(1, 2, 3, 4);
+
+    final List<Integer> doubleNumbers = numbers.stream()
+        .map(number -> n2(number))
+        .collect(Collectors.toList());
+
+    Assert.assertEquals(2, doubleNumbers.get(0).intValue());
+
+    Optional<Integer> num = numbers.stream().reduce((a, b) -> a + b);
+
+    Assert.assertEquals(10, num.get().intValue());
+  }
+
+  private Integer n2(Integer i) {
+    return i * 2;
+  }
 }
